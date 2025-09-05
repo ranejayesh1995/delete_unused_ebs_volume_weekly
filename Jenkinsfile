@@ -33,25 +33,20 @@ pipeline {
 
         stage('Run Script') {
             steps {
-                withCredentials([[ 
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'my-aws-credentials-id'
-                ]]) {
-                    sh '''
-                        set -e
-                        . venv/bin/activate
-                        echo "🔹 AWS Region: $AWS_DEFAULT_REGION"
-                        echo "🔹 AWS Access Key: $AWS_ACCESS_KEY_ID"
-                        
-                        echo "🔹 Verifying AWS identity with STS..."
-                        aws sts get-caller-identity --region $AWS_DEFAULT_REGION
-
-                        echo "🔹 Running delete script..."
-                        python delete_unused_ebs_volume_accross_regions.py
-                    '''
-                }
+                sh '''
+                    set -e
+                    . venv/bin/activate
+                    echo "🔹 AWS Region: $AWS_DEFAULT_REGION"
+                    
+                    echo "🔹 Verifying AWS identity with STS..."
+                    aws sts get-caller-identity --region $AWS_DEFAULT_REGION
+        
+                    echo "🔹 Running delete script..."
+                    python delete_unused_ebs_volume_accross_regions.py
+                '''
             }
         }
+
     }
 
     post {
